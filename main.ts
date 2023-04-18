@@ -2,17 +2,48 @@ namespace SpriteKind {
     export const Tower = SpriteKind.create()
     export const Balloon = SpriteKind.create()
 }
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    CreateTower()
+    monkey_money += -50
+})
 function GameStart () {
     if (RoundNumber == 1) {
         tiles.placeOnTile(Enemies._pickRandom(), tiles.getTileLocation(0, 1))
     }
 }
+function CreateTower () {
+    if (monkey_money >= 50) {
+        CurrentTower = sprites.create(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . e e e e e e e . . . . . 
+            . . . e d f d d d f d e . . . . 
+            . . e e d d d d d d e e . . . . 
+            . . . e d d f f d d d e e . e . 
+            . . . . e e e e e e e . e e e . 
+            . . . . . e . . . e . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `, SpriteKind.Tower)
+        tiles.placeOnTile(CurrentTower, BuildLocation)
+    }
+}
+let canBuild = false
+let BuildLocation: tiles.Location = null
+let CurrentTower: Sprite = null
 let Enemies: Sprite[] = []
 let RoundNumber = 0
-game.showLongText("Welcome to game", DialogLayout.Full)
 let monkey_money = 0
+game.showLongText("Welcome to game", DialogLayout.Full)
+monkey_money = 200
 tiles.setCurrentTilemap(tilemap`level1`)
-let lives = 100
+info.setLife(100)
 RoundNumber = 1
 let Cursor = sprites.create(img`
     . . . . . . . . . . . . . . . . 
@@ -198,3 +229,47 @@ sprites.create(img`
     . . . . . . 1 . . . . . . . . . 
     `, SpriteKind.Balloon)
 ]
+GameStart()
+game.onUpdate(function () {
+    if (Cursor.tileKindAt(TileDirection.Center, sprites.builtin.forestTiles8)) {
+        canBuild = true
+        Cursor.setImage(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . 2 . . . . . . . . . . 2 . . 
+            . . 2 . 8 8 8 8 8 8 8 8 . 2 . . 
+            . . 2 . 8 1 . . . . 1 8 . 2 . . 
+            . . 2 . 8 . 1 . . 1 . 8 . 2 . . 
+            . . 2 . 8 . . f f . . 8 . 2 . . 
+            . . 2 . 8 . . f f . . 8 . 2 . . 
+            . . 2 . 8 . 1 . . 1 . 8 . 2 . . 
+            . . . . 8 1 . . . . 1 8 . . . . 
+            . . 2 . 8 8 8 8 8 8 8 8 . 2 . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `)
+        BuildLocation = Cursor.tilemapLocation()
+    } else {
+        Cursor.setImage(img`
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . 8 8 8 8 8 8 8 8 . . . . 
+            . . . . 8 1 . . . . 1 8 . . . . 
+            . . . . 8 . 1 . . 1 . 8 . . . . 
+            . . . . 8 . . f f . . 8 . . . . 
+            . . . . 8 . . f f . . 8 . . . . 
+            . . . . 8 . 1 . . 1 . 8 . . . . 
+            . . . . 8 1 . . . . 1 8 . . . . 
+            . . . . 8 8 8 8 8 8 8 8 . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            . . . . . . . . . . . . . . . . 
+            `)
+    }
+})
